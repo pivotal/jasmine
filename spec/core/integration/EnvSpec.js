@@ -1556,6 +1556,196 @@ describe("Env integration", function() {
     env.execute();
   });
 
+  it('should skip the rest of an "it" block when executed inside of one', function () {
+
+    var env = new jasmineUnderTest.Env(),
+      reporter = jasmine.createSpyObj('fakeReporter', ['specDone', 'jasmineDone']);
+
+    reporter.jasmineDone.and.callFake(function () {
+
+      var specStatus = reporter.specDone.calls.argsFor(0)[0];
+
+      expect(specStatus.skippedReason).toBe('with a cool message');
+      expect(specStatus.status).toBe('skipped');
+
+      done();
+
+    });
+
+    env.addReporter(reporter);
+
+    env.describe('a great skip test', function () {
+      env.it('will skip the failing test', function () {
+        env.expect(true).toEqual(true);
+        env.skip('with a cool message');
+        env.expect(true).toEqual(false);
+      });
+    });
+
+    env.execute();
+
+  });
+
+  it('should still execute any expectations before skip is encountered', function () {
+
+    var env = new jasmineUnderTest.Env(),
+      reporter = jasmine.createSpyObj('fakeReporter', ['specDone', 'jasmineDone']);
+
+    reporter.jasmineDone.and.callFake(function () {
+
+      var specStatus = reporter.specDone.calls.argsFor(0)[0];
+
+      expect(specStatus.status).toBe('failed');
+
+      done();
+
+    });
+
+    env.addReporter(reporter);
+
+    env.it('will skip the failing test', function () {
+      env.expect(true).toEqual(false);
+      env.skip('with a message');
+      env.expect(true).toEqual(true);
+    });
+
+    env.execute();
+
+  });
+
+    it('should continue to call the proper afterEach order once a skip is executed within an "it" block', function () {
+      var env = new jasmineUnderTest.Env(),
+        reporter = jasmine.createSpyObj('fakeReporter', ['specDone', 'jasmineDone']);
+
+      reporter.jasmineDone.and.callFake(function () {
+        expect(hasTriggeredAfterEach).toEqual(true);
+        done();
+      });
+
+      var hasTriggeredAfterEach = false;
+
+      env.addReporter(reporter);
+
+      env.describe('an example describe', function () {
+
+        env.afterEach(function () {
+          hasTriggeredAfterEach = true;
+        });
+
+        env.it('will skip the failing test', function () {
+          env.expect(true).toEqual(false);
+          env.skip();
+          env.expect(true).toEqual(true);
+        });
+
+      });
+
+      env.execute();
+
+    });
+
+    it('should skip the rest of a beforeEach block', function () {
+      var env = new jasmineUnderTest.Env(),
+        reporter = jasmine.createSpyObj('fakeReporter', ['specDone', 'jasmineDone']);
+
+      reporter.jasmineDone.and.callFake(function () {
+        expect(beforeSkipTriggered).toEqual(true);
+        expect(afterSkipTriggered).toEqual(false);
+        done();
+      });
+
+      var beforeSkipTriggered = false;
+      var afterSkipTriggered = false;
+
+      env.addReporter(reporter);
+
+      env.describe('an example describe', function () {
+
+        env.beforeEach(function () {
+          beforeSkipTriggered = true;
+          skip();
+          afterSkipTriggered = true;
+        });
+
+        env.it('will skip the failing test', function () {
+          env.expect(true).toEqual(true);
+        });
+
+      });
+
+      env.execute();
+
+    });
+
+    it('should only call a beforeEach block once', function () {
+
+      var env = new jasmineUnderTest.Env(),
+        reporter = jasmine.createSpyObj('fakeReporter', ['specDone', 'jasmineDone']);
+
+      reporter.jasmineDone.and.callFake(function () {
+        expect(timeBeforeEachCalled).toEqual(1);
+        done();
+      });
+
+      var timeBeforeEachCalled = 0;
+
+      env.addReporter(reporter);
+
+      env.describe('an example describe', function () {
+
+        env.beforeEach(function () {
+          timeBeforeEachCalled++;
+          skip();
+        });
+
+        env.it('example spec one', function () {
+          env.expect(true).toEqual(true);
+        });
+
+        env.it('example spec two', function () {
+          env.expect(true).toEqual(true);
+        });
+
+      });
+
+      env.execute();
+
+    });
+
+    it('should skip all "it" blocks of a skipped "beforeEach" block', function () {
+      var env = new jasmineUnderTest.Env(),
+        reporter = jasmine.createSpyObj('fakeReporter', ['specDone', 'jasmineDone']);
+
+      reporter.jasmineDone.and.callFake(function () {
+        expect(itCalled).toEqual(false)
+        done();
+      });
+
+      var itCalled = false;
+
+      env.addReporter(reporter);
+
+      env.describe('an example describe', function () {
+
+        env.beforeEach(function () {
+          skip();
+        });
+
+        env.it('will skip the failing test', function () {
+          itCalled = true;
+          expect(true).toEqual(true)
+        });
+
+        env.it('will skip the failing test', function () {
+          itCalled = true;
+          expect(true).toEqual(true)
+        });
+
+      });
+
+      env.execute();
+
+    });
   it('should report using fallback reporter', function(done) {
     var reporter = jasmine.createSpyObj('fakeReporter', [
           'specDone',
