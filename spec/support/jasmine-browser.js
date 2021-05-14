@@ -48,3 +48,7 @@ module.exports = {
     }
   }
 };
+
+if (process.env.JASMINE_BROWSER_FLAKES === 'n') {
+  module.exports.helpers.push('helpers/disableBrowserFlakes.js');
+}
