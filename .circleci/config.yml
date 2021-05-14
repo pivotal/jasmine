@@ -110,6 +110,9 @@ workflows:
   cron:
     triggers:
       - schedule:
+          # The choice of hour is somewhat load-bearing. test_browser currently
+          # tends to fail if there are other Sauce tunnels open. So we only
+          # run it at a time when that's unlikely.
           # Times are UTC.
           cron: "0 10 * * *"
           filters:
@@ -199,14 +202,6 @@ workflows:
               ignore: /pull\/.*/ # Don't run on pull requests.
 
   browser-flakes:
-    triggers:
-    - schedule:
-        # Times are UTC.
-        cron: "0 11 * * *"
-        filters:
-          branches:
-            only:
-            - main
     jobs:
     - build:
         executor: node14
