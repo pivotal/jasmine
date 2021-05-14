@@ -70,6 +70,8 @@ jobs:
     environment:
       JASMINE_BROWSER_FLAKES: n
     steps:
+      - check JASMINE_BROWSER_FLAKES value
+          echo $JASMINE_BROWSER_FLAKES
       - attach_workspace:
           at: .
       - run:
@@ -153,7 +155,7 @@ workflows:
           filters:
             branches:
               ignore: /pull\/.*/ # Don't run on pull requests.
-              
+
   push:
     jobs:
       - build:
