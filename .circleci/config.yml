@@ -1,3 +1,6 @@
+%YAML 1.2
+---
+
 # Run tests against supported Node versions, and (except for pull requests)
 # against supported browsers.
 
