@@ -73,9 +73,6 @@ jobs:
     environment:
       SKIP_JASMINE_BROWSER_FLAKES: "false"
     steps:
-      - run:
-          name: check JASMINE_BROWSER_FLAKES value
-          command: echo $JASMINE_BROWSER_FLAKES
       - attach_workspace:
           at: .
       - run:
