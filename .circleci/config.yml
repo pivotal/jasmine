@@ -70,8 +70,9 @@ jobs:
     environment:
       JASMINE_BROWSER_FLAKES: n
     steps:
-      - check JASMINE_BROWSER_FLAKES value
-          echo $JASMINE_BROWSER_FLAKES
+      - run:
+          name: check JASMINE_BROWSER_FLAKES value
+          command: echo $JASMINE_BROWSER_FLAKES
       - attach_workspace:
           at: .
       - run:
