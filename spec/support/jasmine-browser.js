@@ -49,13 +49,6 @@ module.exports = {
   }
 };
 
-console.log(
-  'SKIP_JASMINE_BROWSER_FLAKES is ' + process.env.SKIP_JASMINE_BROWSER_FLAKES
-);
-
 if (process.env.SKIP_JASMINE_BROWSER_FLAKES === 'true') {
-  console.log('will skip browser flakes');
   module.exports.helpers.push('helpers/disableBrowserFlakes.js');
-} else {
-  console.log("won't skip browser flakes");
 }
