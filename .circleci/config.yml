@@ -115,6 +115,7 @@ workflows:
                  - main
                  - "3.99"
                  - "4.0"
+                 - "error-handler-validation"
     jobs:
       - build:
           executor: node16
